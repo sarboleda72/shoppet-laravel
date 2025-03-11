@@ -72,7 +72,6 @@ class UserController extends Controller
         $user->address  = $request->addressEdit;
         $user->phone    = $request->phoneEdit;
         $user->email    = $request->emailEdit;
-        $user->password = $request->passwordEdit;
         $user->role     = $request->roleEdit;
         
         if($user->save()){
@@ -83,8 +82,10 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        if($user->delete()){
+            return redirect('users')->with('messages', 'El usuario: '. $user->name.' ¡Fue eliminado!');
+        }
     }
 }

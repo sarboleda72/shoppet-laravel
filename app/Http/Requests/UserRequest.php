@@ -21,6 +21,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        //dd($this->all());
         if($this->method()== "PUT"){
             return [
                 'nameEdit'      => ['required', 'string', 'max:255'],
@@ -29,7 +30,7 @@ class UserRequest extends FormRequest
                 'addressEdit'   => ['required', 'string', 'max:255'],
                 'phoneEdit'     => ['required', 'string', 'max:255'],
                 'roleEdit'      => ['required', 'string', 'max:255'],
-                'emailEdit'     => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'emailEdit'     => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class .',email,'.$this->id],
             ];
 
         }
