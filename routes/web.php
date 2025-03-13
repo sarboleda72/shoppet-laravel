@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\controllers\UserController;
+use App\Http\controllers\PetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,8 +20,13 @@ Route::middleware('auth')->group(function () {
     Route::resources([
         'users' => UserController::class
     ]);
+
+    Route::resources([
+        'pets' => PetController::class
+    ]);
 });
 
 Route::post('users/search', [UserController::class, 'search']);
+Route::post('pets/search', [PetController::class, 'search']);
 
 require __DIR__ . '/auth.php';

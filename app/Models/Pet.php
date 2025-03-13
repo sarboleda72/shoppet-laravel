@@ -28,4 +28,12 @@ class Pet extends Model
         return $this->belongsTo('App\Models\Scheduling');
     }
 
+    public function scopeNames($users, $query)
+    {
+        if (trim($query)) {
+            $users->where('name', 'LIKE', '%' . $query . '%')
+                ->orWhere('type', 'LIKE', '%' . $query . '%');
+        }
+    }
+
 }
