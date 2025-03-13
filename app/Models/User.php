@@ -52,7 +52,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function scheduling(){
+    public function scheduling()
+    {
         return $this->belongsTo('App\Models\Scheduling');
+    }
+
+    //Scope
+
+    public function scopeNames($users, $query)
+    {
+        if (trim($query)) {
+            $users->where('name', 'LIKE', '%' . $query . '%')
+                ->orWhere('email', 'LIKE', '%' . $query . '%');
+        }
     }
 }

@@ -14,7 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::All();
-        return view('users.index')->with(['users'=>$users]);
+        return view('users.index')->with(['users' => $users]);
     }
 
     /**
@@ -31,17 +31,17 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $user = new User;
-        $user->name     = $request->name;
+        $user->name = $request->name;
         $user->lastname = $request->lastname;
         $user->document = $request->document;
-        $user->address  = $request->address;
-        $user->phone    = $request->phone;
-        $user->email    = $request->email;
+        $user->address = $request->address;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
         $user->password = $request->password;
-        $user->role     = $request->role;
-        
-        if($user->save()){
-            return redirect('users')->with('messages', 'El usuario: '. $user->name.' ¡Fue creado!');
+        $user->role = $request->role;
+
+        if ($user->save()) {
+            return redirect('users')->with('messages', 'El usuario: ' . $user->name . ' ¡Fue creado!');
         }
     }
 
@@ -66,16 +66,16 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
-        $user->name     = $request->nameEdit;
+        $user->name = $request->nameEdit;
         $user->lastname = $request->lastnameEdit;
         $user->document = $request->documentEdit;
-        $user->address  = $request->addressEdit;
-        $user->phone    = $request->phoneEdit;
-        $user->email    = $request->emailEdit;
-        $user->role     = $request->roleEdit;
-        
-        if($user->save()){
-            return redirect('users')->with('messages', 'El usuario: '. $user->name.' ¡Fue actualizdo!');
+        $user->address = $request->addressEdit;
+        $user->phone = $request->phoneEdit;
+        $user->email = $request->emailEdit;
+        $user->role = $request->roleEdit;
+
+        if ($user->save()) {
+            return redirect('users')->with('messages', 'El usuario: ' . $user->name . ' ¡Fue actualizdo!');
         }
     }
 
@@ -84,8 +84,14 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->delete()){
-            return redirect('users')->with('messages', 'El usuario: '. $user->name.' ¡Fue eliminado!');
+        if ($user->delete()) {
+            return redirect('users')->with('messages', 'El usuario: ' . $user->name . ' ¡Fue eliminado!');
         }
+    }
+
+    public function search(Request $request)
+    {
+        $users = User::names($request->q)->paginate(20);
+        return view('users.search')->with(['users' => $users]);
     }
 }

@@ -35,7 +35,7 @@
                             <th>Acciones</th>
                         </tr>
                     </tfoot>
-                    <tbody>
+                    <tbody class="insert">
                         @foreach ($users as $user)
                             <tr>
                                 <th>{{ $user->name }}</th>
@@ -47,13 +47,10 @@
                                 <th>{{ $user->role }}</th>
                                 <th>{{ $user->photo }}</th>
                                 <th>
-                                    <button class="btn btn-primary btn-user btn-block edit" data-bs-toggle="modal" data-bs-target="#modalEdit" id='{{$user->id}}'>Editar</button>
-                                    <button class="btn btn-danger btn-user btn-block" data-bs-toggle="modal" data-bs-target="#modalDelete" id='{{$user->id}}'>Eliminar</button>
-
-                                    <form method="POST"  action="{{url('users/'.$user->id)}}"> 
-                                        @csrf 
-                                        @method('DELETE')
-                                    </form>
+                                    <button class="btn btn-primary btn-user btn-block edit" data-bs-toggle="modal"
+                                        data-bs-target="#modalEdit" id='{{ $user->id }}'>Editar</button>
+                                    <button class="btn btn-danger btn-user btn-block delete" data-bs-toggle="modal"
+                                        data-bs-target="#modalDelete" id='{{ $user->id }}'>Eliminar</button>
                                 </th>
                             </tr>
                         @endforeach
@@ -63,7 +60,7 @@
         </div>
     </div>
 
-    {{-- Modal Crear--}}
+    {{-- Modal Crear --}}
     <div class="modal fade" id="modalCreate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -129,7 +126,7 @@
                         </div>
                     </form>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -143,12 +140,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST " id="formEdit" action="{{route('users.update', $user->id)}}" class="user">
+                    <form method="POST " id="formEdit" action="{{ route('users.update', $user->id) }}" class="user">
                         @csrf
                         @method('PUT')
                         <div class="form-group row">
                             <input name="id" type="text" class="form-control form-control-user" hidden>
-                            
+
                             <div class="col-sm-6 mb-3 mb-sm-0">
                                 <input name="nameEdit" type="text" class="form-control form-control-user"
                                     id="exampleFirstName" placeholder="Nombres">
@@ -191,43 +188,56 @@
                         </div>
                     </form>
                 </div>
-                
+
             </div>
         </div>
     </div>
 
-    {{-- Modal Eliminar--}}
+    {{-- Modal Eliminar --}}
     <div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar usuario</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{{url('users/'.$user->id)}}" class="user">
+                    <form method="POST" id="formDelete" action="{{ url('users/' . $user->id) }}" class="user">
                         @csrf
                         @method('DELETE')
 
+                        <div class="form-group">
+                            <label for="">¿Realmente quiere eliminarlo?</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Este acción no tiene retroceso.</label>
+                        </div>
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger btn-circle btn-sm" data-bs-dismiss="modal">
-                                <i class="fas fa-trash"></i></button>
-                            <button type="submit" class="btn btn-success btn-circle btn-sm">
-                                <i class="fas fa-check"></i>
-                            </button>
+                            <button type="button" class="btn btn-danger btn-icon-split" data-bs-dismiss="modal">
+                                <span class="text">Cacelar</span>
+
+                                <button type="submit" name="id" class="btn btn-success btn-icon-split">
+
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span class="text">Confirrmar</span>
+
+                                </button>
                         </div>
                     </form>
                 </div>
-                
             </div>
         </div>
     </div>
 
     <script>
-        $(document).on('click','.edit', function(){
+        // Jquery para el modal de editar
+        $(document).on('click', '.edit', function() {
             var userId = $(this).attr('id');
-            
-            $.get('users/'+userId+'/edit', {}, function(data){
+
+            $.get('users/' + userId + '/edit', {}, function(data) {
                 var user = data.user
                 $('input[name="id"]').val(userId);
                 $('input[name="nameEdit"]').val(user.name);
@@ -244,23 +254,56 @@
             e.preventDefault();
             var form = $(this);
             var userId = form.find('input[name="id"]').val();
-            var url = "/users/"+userId;
+            var url = "/users/" + userId;
 
             $.ajax({
                 url: url,
                 type: 'PUT',
-                data: form.serialize(),
-                success: function(response) {
-                    console.log("Actualización exitosa:", response);
-                    $('#modalEdit').modal('hide'); // Cierra el modal
-                    location.reload(); // Recarga la página
-                },
-                error: function(xhr) {
-                    $('#modalEdit').modal('hide'); // Cierra el modal
-                    location.reload();
-                    console.error("Error:", xhr.responseText);
-                }
+                data: form.serialize()
+            }).always(function(response) {
+                console.log("Eliminación exitosa:", response);
+                $('#modalDelete').modal('hide');
+                location.reload();
             });
-        }); 
+        });
+
+        // Jquery para el modal de eliminar
+        $(document).on('click', '.delete', function() {
+            var userId = $(this).attr('id');
+            $('button[name="id"]').val(userId);
+        })
+
+        $('#formDelete').submit(function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var userId = form.find('button[name="id"]').val();
+            var url = "/users/" + userId;
+
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                data: form.serialize()
+            }).always(function(response) {
+                console.log("Eliminación exitosa:", response);
+                $('#modalDelete').modal('hide');
+                location.reload();
+            });
+        });
+
+        // Jquery para buscar un registro
+        $('#qsearch').on('keyup', function(e) {
+            e.preventDefault();
+            $query = $(this).val();
+            $token = $('input[name=_token]').val();
+
+            $.post('users/search', {
+                    q: $query,
+                    _token: $token
+                },
+                function(data) {
+                    $('.insert').empty().append(data);
+                }
+            )
+        })
     </script>
 @endsection
